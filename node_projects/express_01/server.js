@@ -2,6 +2,8 @@
 
 const mongoose = require('mongoose');
 const express = require('express')
+const http = require('http'); // Import http to create a server
+const { Server } = require('socket.io'); // Import socket.io for real-time communication
 const app= express()
 app.set('view engine','ejs')
 require('dotenv').config()
@@ -12,12 +14,19 @@ const userRouter = require('./routes/user')
 const testRouter=require('./routes/test')
 const authRouter=require('./routes/auth')
 const fs=require('fs')
-const path=require('path')
-const publicKey=fs.readFileSync(path.resolve(__dirname,'./public.key'),'utf-8')
+const path=require('path');
+const setupSocket = require('./Sockets/Game');
+// const publicKey=fs.readFileSync(path.resolve(__dirname,'./public.key'),'utf-8')
+
+const server = http.createServer(app);
+
+
+// WebSocket Setup for Real-Time Game Connections
+
+setupSocket(server);
 
 
 // dbConnection
-
 main().catch(err => console.log(err));
 
 async function main() {
@@ -51,7 +60,6 @@ app.use('/auth',authRouter.router)
 app.use("/test",testRouter.router)
 app.use('/products',auth,productRouter.router);
 app.use('/users',auth,userRouter.router);
-app.use(express.static(process.env.PUBLIC_DIR))
 // app.use((req,res,next)=>{
 //     console.log(req.query.name, req.query.age, req.query.subject)
 //     next()
@@ -77,5 +85,8 @@ app.get('/params/:name/:subject',(req,res)=>{
 
 
 
-
-app.listen(3000,()=>console.log('listening'))
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+// app.listen(3000,()=>console.log('listening'))

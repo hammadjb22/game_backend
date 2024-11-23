@@ -46,11 +46,11 @@ const userSchema = new Schema({
     minlength: [2, 'Name must be at least 2 characters long'],
     unique:true
   },
-  fullName: {
-    type: String,
-    required: [true, 'Full Name is required'],
-    trim: true,
-  },
+  // fullName: {
+  //   type: String,
+  //   required: [true, 'Full Name is required'],
+  //   trim: true,
+  // },
   email: {
     type: String,
     required: [true, 'Email is required'],
@@ -62,37 +62,37 @@ const userSchema = new Schema({
       message: 'Please enter a valid email address'
     }
   },
-  religion: {
-    type: String,
-    enum: ['islam', 'hinduism', 'christianity','buddhism'], // Example enum, you can update with real options
-    required: true
-  },
+  // religion: {
+  //   type: String,
+  //   enum: ['islam', 'hinduism', 'christianity','buddhism'], // Example enum, you can update with real options
+  //   required: true
+  // },
   gender: {
     type: String,
     enum: ['male', 'female', 'other'], // Example enum, you can update with real options
     required: true
   },
-  dob: {
-    type: Date, // Use Date to handle date of birth
-    required: true,
-    validate: {
-      validator: function (value) {
-        // Validate age is between 5 and 50 years
-        const age = new Date().getFullYear() - value.getFullYear();
-        return age >= 5 && age <= 50;
-      },
-      message: 'Age must be between 5 and 50 years'
-    }
-  },
-  phoneNumber: {
-    type: String,
-    required: [true, 'Phone number is required'],
-    unique: true,
-    validate: {
-      validator: validatePhoneNumber,
-      message: 'Please enter a valid 11-digit phone number'
-    }
-  },
+  // dob: {
+  //   type: Date, // Use Date to handle date of birth
+  //   required: true,
+  //   validate: {
+  //     validator: function (value) {
+  //       // Validate age is between 5 and 50 years
+  //       const age = new Date().getFullYear() - value.getFullYear();
+  //       return age >= 5 && age <= 50;
+  //     },
+  //     message: 'Age must be between 5 and 50 years'
+  //   }
+  // },
+  // phoneNumber: {
+  //   type: String,
+  //   required: [true, 'Phone number is required'],
+  //   unique: true,
+  //   validate: {
+  //     validator: validatePhoneNumber,
+  //     message: 'Please enter a valid 11-digit phone number'
+  //   }
+  // },
   password: {
     type: String,
     required: [true, 'Password is required'],
@@ -113,7 +113,18 @@ const userSchema = new Schema({
       message: 'Passwords must match'
     }
   },
-  token:String
+  token:String,
+    // Fields for Forgot Password functionality
+    otp: {
+      type: String,
+      default: null
+    },
+    otpExpiry: {
+      type: Date,
+      default: null
+    },
+    loginAttempts: { type: Number, default: 0 }, // Tracks failed attempts
+    lockUntil: { type: Date }, // Time until the account is locked
 }, { timestamps: true });
 
 // Pre-save middleware to handle password encryption (for example, using bcrypt)
