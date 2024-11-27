@@ -101,10 +101,18 @@ exports.createUser = async (req, res) => {
     user.token = jwt.sign({ email: req.body.email }, privateKey, { algorithm: 'RS256' });
 
     // Save the user to the database
+    // await user.save();
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpiry = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
     await user.save();
+
+    // Send OTP to the user's email
+    
 
     // Send success response
     res.status(201).json({ success: true, description: 'User created successfully' });
+    await sendEmail(user.email, 'Email Verification OTP', `Your OTP is ${otp}`);
   } catch (err) {
     // console.error('Error saving user:', err);
     if (err.code === 11000) {
